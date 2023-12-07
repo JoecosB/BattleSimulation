@@ -35,14 +35,24 @@ def acceleration_calc(character_pos, enemy_pos, target_pos):
         for pos_2 in enemy_pos:
             x = pos_2[0] - pos_1[0]
             y = pos_2[1] - pos_1[1]
-            if x >= 0:
-                acceleration_from_enemy[0] -= 10*5**(-abs(x/200))
+            if x > 0:
+                acceleration_from_enemy[0] -= 10*5**(-abs(x/150))
+            elif x < 0:
+                acceleration_from_enemy[0] += 10*5**(-abs(x/150))
             else:
-                acceleration_from_enemy[0] += 10*5**(-abs(x/200))
-            if y >= 0:
-                acceleration_from_enemy[1] -= 10*5**(-abs(y/200))
+                if pos_1[0] < 100:
+                    acceleration_from_enemy[0] += 10*5**(-abs(x/150))
+                else:
+                    acceleration_from_enemy[0] -= 10*5**(-abs(x/150))
+            if y > 0:
+                acceleration_from_enemy[1] -= 10*5**(-abs(y/150))
+            elif y < 0:
+                acceleration_from_enemy[1] += 10*5**(-abs(y/150))
             else:
-                acceleration_from_enemy[1] += 10*5**(-abs(y/200))
+                if pos_1[1] < 100:
+                    acceleration_from_enemy[1] += 10*5**(-abs(y/150))
+                else:
+                    acceleration_from_enemy[1] -= 10*5**(-abs(y/150))
    
         acceleration_to_target = [0, 0]
         if len(target_pos) != 0:
@@ -70,15 +80,16 @@ def acceleration_calc(character_pos, enemy_pos, target_pos):
     return character_accelerations
 
 #设定函数，判断人物是否被击杀
-def get_killed(character_pos, enemy_pos):
+def get_killed(character_pos, enemy_pos, mute):
     killed_list = []
 
     for i in range(len(character_pos)):
         for pos in enemy_pos:
-            if ((character_pos[i][0] - pos[0])**2 + (character_pos[i][1] - pos[1])**2)**(1/2) <= 10:
+            if ((character_pos[i][0] - pos[0])**2 + (character_pos[i][1] - pos[1])**2)**(1/2) <= 15:
                 killed_list.append(i)
-                death_effect = pygame.mixer.Sound("./audios/death_effect_" + str(randint(1, 6)) + ".wav")
-                death_effect.play()
+                if mute != 1:
+                    death_effect = pygame.mixer.Sound("./audios/death_effect_" + str(randint(1, 6)) + ".wav")
+                    death_effect.play()
                 break
 
     killed_list.sort(reverse=True)
@@ -108,12 +119,14 @@ while True:
         break
 
 #模拟过程主循环
+m_pressed = 0
+mute = -1
 while True:
     clock.tick(40)
 
-    lutalli_killed = get_killed(character_pos=lutalli_pos, enemy_pos=sheldon_pos)
-    joecos_killed = get_killed(character_pos=joecos_pos, enemy_pos=lutalli_pos)
-    sheldon_killed = get_killed(character_pos=sheldon_pos, enemy_pos=joecos_pos)
+    lutalli_killed = get_killed(character_pos=lutalli_pos, enemy_pos=sheldon_pos, mute=mute)
+    joecos_killed = get_killed(character_pos=joecos_pos, enemy_pos=lutalli_pos, mute=mute)
+    sheldon_killed = get_killed(character_pos=sheldon_pos, enemy_pos=joecos_pos, mute=mute)
     for index in lutalli_killed:
         sheldon_pos.append(lutalli_pos[index])
         sheldon_vectors.append(lutalli_vectors[index])
@@ -222,3 +235,10 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == 109 and m_pressed == 0:
+                m_pressed = 1
+                mute *= -1
+        else:
+            m_pressed = 0
