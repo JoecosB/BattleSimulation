@@ -4,6 +4,7 @@ from random import randint
 
 #设置窗口大小、标题和底色
 clock = pygame.time.Clock()
+pygame.mixer.init()
 pygame.init()
 screen = pygame.display.set_mode((1440, 800))
 screen.fill('white')
@@ -76,6 +77,8 @@ def get_killed(character_pos, enemy_pos):
         for pos in enemy_pos:
             if ((character_pos[i][0] - pos[0])**2 + (character_pos[i][1] - pos[1])**2)**(1/2) <= 10:
                 killed_list.append(i)
+                death_effect = pygame.mixer.Sound("./audios/death_effect_" + str(randint(1, 6)) + ".wav")
+                death_effect.play()
                 break
 
     killed_list.sort(reverse=True)
