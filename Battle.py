@@ -35,24 +35,25 @@ def acceleration_calc(character_pos, enemy_pos, target_pos):
         for pos_2 in enemy_pos:
             x = pos_2[0] - pos_1[0]
             y = pos_2[1] - pos_1[1]
+            p = 3*10**(-((x**2 + y**2))**0.5/230)
             if x > 0:
-                acceleration_from_enemy[0] -= 10*5**(-abs(x/150))
+                acceleration_from_enemy[0] -= 10*5**(-abs(x/150))*p
             elif x < 0:
-                acceleration_from_enemy[0] += 10*5**(-abs(x/150))
+                acceleration_from_enemy[0] += 10*5**(-abs(x/150))*p
             else:
                 if pos_1[0] < 100:
-                    acceleration_from_enemy[0] += 10*5**(-abs(x/150))
+                    acceleration_from_enemy[0] += 10*5**(-abs(x/150))*p
                 else:
-                    acceleration_from_enemy[0] -= 10*5**(-abs(x/150))
+                    acceleration_from_enemy[0] -= 10*5**(-abs(x/150))*p
             if y > 0:
-                acceleration_from_enemy[1] -= 10*5**(-abs(y/150))
+                acceleration_from_enemy[1] -= 10*5**(-abs(y/150))*p
             elif y < 0:
-                acceleration_from_enemy[1] += 10*5**(-abs(y/150))
+                acceleration_from_enemy[1] += 10*5**(-abs(y/150))*p
             else:
                 if pos_1[1] < 100:
-                    acceleration_from_enemy[1] += 10*5**(-abs(y/150))
+                    acceleration_from_enemy[1] += 10*5**(-abs(y/150))*p
                 else:
-                    acceleration_from_enemy[1] -= 10*5**(-abs(y/150))
+                    acceleration_from_enemy[1] -= 10*5**(-abs(y/150))*p
    
         acceleration_to_target = [0, 0]
         if len(target_pos) != 0:
